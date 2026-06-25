@@ -16,15 +16,15 @@ const App: React.FC = () => {
           topColor="#5227FF"
           bottomColor="#FF9FFC"
           intensity={1.0}
-          rotationSpeed={1.5}
-          glowAmount={0.005}
+          rotationSpeed={1}
+          glowAmount={0.004}
           pillarWidth={5.5}
           pillarHeight={0.4}
-          noiseIntensity={0.4}
+          noiseIntensity={0.5}
           pillarRotation={40}
           interactive={false}
           mixBlendMode="screen"
-          quality="high"
+          quality="medium"
         />
       </div>
 
