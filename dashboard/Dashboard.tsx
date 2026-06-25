@@ -1,10 +1,13 @@
 import React from 'react';
-import SpotlightCard from '../components/SpotlightCard/SpotlightCard';
-import LogoLoop from '../components/LogoLoop/LogoLoop';
+import SpotlightCard from '../src/components/SpotlightCard/SpotlightCard';
+import LogoLoop from '../src/components/LogoLoop/LogoLoop';
+// If your ProceedButton is highly reusable, you can import it directly:
+// import ProceedButton from '../src/components/ProceedButton/ProceedButton';
 
 import { SiGithub, SiX, SiLinkedin, SiDiscord } from 'react-icons/si';
 import './Dashboard.css';
 
+// Mock social links for the floating LogoLoop
 const socialLogos = [
   { node: <SiGithub />, title: "GitHub", href: "https://github.com" },
   { node: <SiX />, title: "X", href: "https://x.com" },
