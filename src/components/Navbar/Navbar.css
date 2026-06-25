@@ -1,0 +1,82 @@
+/* ============================================================
+   Navbar Component Styles
+   ============================================================ */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 48px;
+  pointer-events: none;
+}
+
+/* ── Brand mark (left) ── */
+.navbar__brand {
+  pointer-events: auto;
+}
+
+.navbar__brand-text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--td-white);
+  opacity: 0.92;
+  user-select: none;
+  /* Θ prefix rendered via CSS */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__brand-theta {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--td-violet);
+  line-height: 1;
+  text-shadow: 0 0 16px var(--td-violet-glow);
+}
+
+.navbar__brand-divider {
+  width: 1px;
+  height: 14px;
+  background: var(--td-border-light);
+  opacity: 0.6;
+}
+
+/* ── Status (right) ── */
+.navbar__status {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar__status-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--td-white-muted);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .navbar {
+    padding: 20px 24px;
+  }
+  .navbar__brand-text {
+    font-size: 11px;
+    letter-spacing: 0.24em;
+  }
+  .navbar__status-label {
+    display: none;
+  }
+}

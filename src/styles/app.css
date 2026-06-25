@@ -1,0 +1,61 @@
+/* ============================================================
+   App Layout Styles
+   ============================================================ */
+
+.app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--td-obsidian);
+}
+
+/* Background noise texture overlay */
+.app::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Layer 0 — Light pillar WebGL */
+.app__pillar-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Layer 1 — Hex grid */
+/* (HexGrid manages its own z-index) */
+
+/* Layer 2 — Vignette */
+.app__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 80% at 50% 50%,
+    transparent 30%,
+    rgba(4, 4, 10, 0.55) 70%,
+    rgba(4, 4, 10, 0.85) 100%
+  );
+}
+
+/* Layer 3 — Horizontal scan line (ambient) */
+.app__scanline {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(82, 39, 255, 0.012) 3px,
+    rgba(82, 39, 255, 0.012) 4px
+  );
+}

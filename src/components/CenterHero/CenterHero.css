@@ -1,0 +1,141 @@
+/* ============================================================
+   CenterHero Component Styles
+   ============================================================ */
+
+.center-hero {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+  gap: 0;
+}
+
+/* Eyebrow tag */
+.center-hero__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--td-white-dim);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  animation: hero-rise 0.8s 0.4s var(--ease-out) forwards;
+}
+
+.center-hero__eyebrow::before,
+.center-hero__eyebrow::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--td-border-light);
+}
+
+/* Main logotype */
+.center-hero__name {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 8vw, 96px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--td-white);
+  line-height: 1;
+  text-align: center;
+
+  /* Layered glow for premium depth */
+  text-shadow:
+    0 0 60px rgba(82, 39, 255, 0.6),
+    0 0 120px rgba(82, 39, 255, 0.25),
+    0 0 200px rgba(255, 159, 252, 0.12);
+
+  opacity: 0;
+  animation: hero-rise 1s 0.6s var(--ease-out) forwards;
+}
+
+/* Gradient sweep on hover — subtle premium touch */
+.center-hero__name-inner {
+  background: linear-gradient(
+    135deg,
+    var(--td-white) 30%,
+    var(--td-rose) 55%,
+    var(--td-violet) 80%,
+    var(--td-white) 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: name-shimmer 6s ease-in-out 2s infinite;
+}
+
+/* Sub-label */
+.center-hero__sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--td-white-muted);
+  margin-top: 20px;
+  opacity: 0;
+  animation: hero-rise 0.8s 0.9s var(--ease-out) forwards;
+}
+
+/* Corner detail lines */
+.center-hero__corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+
+.center-hero__corner--tl {
+  top: calc(50% - 64px);
+  left: calc(50% - 180px);
+  border-top: 1px solid var(--td-border-light);
+  border-left: 1px solid var(--td-border-light);
+}
+
+.center-hero__corner--tr {
+  top: calc(50% - 64px);
+  right: calc(50% - 180px);
+  border-top: 1px solid var(--td-border-light);
+  border-right: 1px solid var(--td-border-light);
+}
+
+.center-hero__corner--bl {
+  bottom: calc(50% - 64px);
+  left: calc(50% - 180px);
+  border-bottom: 1px solid var(--td-border-light);
+  border-left: 1px solid var(--td-border-light);
+}
+
+.center-hero__corner--br {
+  bottom: calc(50% - 64px);
+  right: calc(50% - 180px);
+  border-bottom: 1px solid var(--td-border-light);
+  border-right: 1px solid var(--td-border-light);
+}
+
+/* Animations */
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes name-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (max-width: 600px) {
+  .center-hero__corner { display: none; }
+}

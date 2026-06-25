@@ -1,0 +1,25 @@
+/* ============================================================
+   LightPillar Component Styles
+   ============================================================ */
+
+.light-pillar-fallback {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(82, 39, 255, 0.05);
+  color: var(--td-white-dim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.light-pillar-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
