@@ -17,11 +17,11 @@
 /* Eyebrow tag */
 .center-hero__eyebrow {
   font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 400;
+  font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.38em;
   text-transform: uppercase;
-  color: var(--td-white-dim);
+  color: var(--td-white);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -79,8 +79,8 @@
 /* Sub-label */
 .center-hero__sub {
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 300;
+  font-size: 14px;
+  font-weight: 650;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--td-white-muted);
