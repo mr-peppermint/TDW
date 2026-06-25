@@ -16,7 +16,7 @@ const App: React.FC = () => {
           topColor="#5227FF"
           bottomColor="#FF9FFC"
           intensity={1.0}
-          rotationSpeed={0.4}
+          rotationSpeed={3}
           glowAmount={0.005}
           pillarWidth={5.5}
           pillarHeight={0.4}
