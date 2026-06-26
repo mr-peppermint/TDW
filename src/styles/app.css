@@ -1,7 +1,3 @@
-/* ============================================================
-   App Layout Styles
-   ============================================================ */
-
 .app {
   position: relative;
   width: 100vw;
@@ -28,8 +24,7 @@
   z-index: 0;
 }
 
-/* Layer 1 — Hex grid */
-/* (HexGrid manages its own z-index) */
+
 
 /* Layer 2 — Vignette */
 .app__vignette {
