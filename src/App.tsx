@@ -1,36 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import LightPillar from './components/LightPillar';
 import HexGrid from './components/HexGrid';
 import Navbar from './components/Navbar';
 import CenterHero from './components/CenterHero';
 import ProceedButton from './components/ProceedButton';
-
-
 import './styles/globals.css';
 import './styles/app.css';
 
 const App: React.FC = () => {
-  // Track the browser's current path location
-  const [currentPath, setCurrentPath] = useState(window.location.pathname);
-
-  useEffect(() => {
-    const handleLocationChange = () => {
-      setCurrentPath(window.location.pathname);
-    };
-
-    // Listen for browser back/forward buttons
-    window.addEventListener('popstate', handleLocationChange);
-    return () => {
-      window.removeEventListener('popstate', handleLocationChange);
-    };
-  }, []);
-
-  // ── Condition 1: Render the Dashboard ──
-  if (currentPath === '/dashboard') {
-    return <Dashboard />;
-  }
-
-  // ── Condition 2: Fallback to the Main Landing Page ──
   return (
     <div className="app" role="main">
       {/* ── Layer 0: WebGL Light Pillar background ── */}
@@ -68,7 +45,7 @@ const App: React.FC = () => {
 
       {/* ── UI Layer: Proceed CTA ── */}
       <ProceedButton
-        href="/dashboard"
+        href="https://thetadivision.dpdns.org/dashboard"
         label="Proceed to Dashboard"
       />
     </div>
