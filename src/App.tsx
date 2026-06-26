@@ -28,10 +28,6 @@ const App: React.FC = () => {
         />
       </div>
 
-      {/* ── Layer 1: Hex grid overlay ── */}
-      <HexGrid />
-
-      {/* ── Layer 2: Atmospheric vignette ── */}
       <div className="app__vignette" aria-hidden="true" />
 
       {/* ── Layer 3: CRT scan lines ── */}
