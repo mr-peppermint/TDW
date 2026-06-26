@@ -6,7 +6,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
 
-      {/* ── Layer 0: Silk background ── */}
+      {/* ── Silk background ── */}
       <div className="dashboard__silk" aria-hidden="true">
         <Silk
           speed={3}
@@ -17,10 +17,9 @@ const Dashboard: React.FC = () => {
         />
       </div>
 
-      {/* ── Layer 1: Vignette ── */}
+      {/* ── Overlay + scanlines ── */}
+      <div className="dashboard__overlay" aria-hidden="true" />
       <div className="dashboard__vignette" aria-hidden="true" />
-
-      {/* ── Layer 2: Scan lines ── */}
       <div className="dashboard__scanline" aria-hidden="true" />
 
       {/* ── Navbar ── */}
@@ -38,27 +37,6 @@ const Dashboard: React.FC = () => {
           </span>
         </div>
       </nav>
-
-      {/* ── Center hero ── */}
-      <div className="dashboard__center">
-        <p className="dashboard__eyebrow" aria-hidden="true">Theta Division</p>
-        <h1 className="dashboard__title">Dashboard</h1>
-        <p className="dashboard__sub">thetadivision.dpdns.org</p>
-      </div>
-
-      {/* ── Bottom CTA ── */}
-      <div className="dashboard__bottom">
-        <a
-          href="https://thetadivision.dpdns.org/dashboard"
-          className="dashboard__btn"
-          aria-label="Enter Dashboard"
-        >
-          <span className="dashboard__btn-corner dashboard__btn-corner--tl" aria-hidden="true" />
-          <span className="dashboard__btn-corner dashboard__btn-corner--br" aria-hidden="true" />
-          <span className="dashboard__btn-text">Enter Dashboard</span>
-          <span className="dashboard__btn-arrow" aria-hidden="true">→</span>
-        </a>
-      </div>
 
     </div>
   );
