@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './ProceedButton.css';
 
 interface ProceedButtonProps {
@@ -12,8 +13,8 @@ const ProceedButton: React.FC<ProceedButtonProps> = ({
 }) => {
   return (
     <div className="proceed-bar">
-      <a
-        href={href}
+      <Link
+        to={href}
         className="proceed-btn"
         aria-label={label}
       >
@@ -23,7 +24,7 @@ const ProceedButton: React.FC<ProceedButtonProps> = ({
 
         <span className="proceed-btn__text">{label}</span>
         <span className="proceed-btn__arrow" aria-hidden="true">→</span>
-      </a>
+      </Link>
     </div>
   );
 };
