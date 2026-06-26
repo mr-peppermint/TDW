@@ -9,9 +9,9 @@ const Dashboard: React.FC = () => {
       {/* ── Silk background ── */}
       <div className="dashboard__silk" aria-hidden="true">
         <Silk
-          speed={3}
+          speed={5}
           scale={0.9}
-          color="#2a2a2a"
+          color="#5227FF"
           noiseIntensity={1.2}
           rotation={1.82}
         />
