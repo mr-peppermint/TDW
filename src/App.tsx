@@ -6,8 +6,6 @@ import CenterHero from './components/CenterHero';
 import ProceedButton from './components/ProceedButton';
 
 
-import Dashboard from '../dashboard/Dashboard'; 
-
 import './styles/globals.css';
 import './styles/app.css';
 
