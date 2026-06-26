@@ -11,7 +11,7 @@ const Dashboard: React.FC = () => {
         <Silk
           speed={5}
           scale={0.9}
-          color="#5227FF"
+          color="#5227ff"
           noiseIntensity={1.2}
           rotation={1.82}
         />
