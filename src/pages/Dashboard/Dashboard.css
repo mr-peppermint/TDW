@@ -7,7 +7,7 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #8f6c84;
+  background: #080808;
 }
 
 /* ── Silk canvas layer ── */
@@ -146,7 +146,184 @@
   100% { transform: scale(2.6); opacity: 0; }
 }
 
+/* ── Cards grid ── */
+.dashboard__cards {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 100px 48px 48px; /* top clears navbar */
+  pointer-events: none;
+}
+
+.dashboard__card {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 320px;
+  background: rgba(12, 12, 12, 0.72);
+  border: 1px solid var(--td-border-light);
+  border-radius: 4px;
+  padding: 36px 32px 32px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+  opacity: 0;
+  animation: card-rise 0.7s var(--ease-out) forwards;
+}
+
+.dashboard__card:nth-child(1) { animation-delay: 0.3s; }
+.dashboard__card:nth-child(2) { animation-delay: 0.45s; }
+.dashboard__card:nth-child(3) { animation-delay: 0.6s; }
+
+.dashboard__card:hover {
+  border-color: var(--td-accent);
+  box-shadow:
+    0 0 28px rgba(255, 255, 255, 0.06),
+    0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Icon */
+.dashboard__card-icon {
+  color: var(--td-white-muted);
+  margin-bottom: 24px;
+  transition: color 0.25s var(--ease-out);
+}
+
+.dashboard__card:hover .dashboard__card-icon {
+  color: var(--td-white);
+}
+
+/* Title */
+.dashboard__card-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--td-white);
+  margin-bottom: 12px;
+}
+
+/* Description */
+.dashboard__card-desc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--td-white-muted);
+  margin-bottom: 28px;
+  flex: 1;
+}
+
+/* ── Card button — identical mechanic to ProceedButton ── */
+.dashboard__card-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 24px;
+  background: transparent;
+  border: 1px solid var(--td-border-light);
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--td-white);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  overflow: hidden;
+  align-self: flex-start;
+  transition:
+    border-color 0.25s var(--ease-out),
+    box-shadow   0.35s var(--ease-out);
+}
+
+/* Sweep fill — same mechanic as ProceedButton */
+.dashboard__card-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #2a2a2a, #3e3e3e);
+  transform: translateX(-101%);
+  transition: transform 0.35s var(--ease-out);
+  z-index: 0;
+}
+
+.dashboard__card-btn:hover::before,
+.dashboard__card-btn:focus-visible::before {
+  transform: translateX(0);
+}
+
+.dashboard__card-btn:hover,
+.dashboard__card-btn:focus-visible {
+  border-color: var(--td-white);
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.10),
+    0 0 44px rgba(255, 255, 255, 0.04);
+  outline: none;
+}
+
+.dashboard__card-btn__text,
+.dashboard__card-btn__arrow {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard__card-btn__arrow {
+  font-size: 13px;
+  opacity: 0.6;
+  transition: transform 0.25s var(--ease-out), opacity 0.25s;
+}
+
+.dashboard__card-btn:hover .dashboard__card-btn__arrow,
+.dashboard__card-btn:focus-visible .dashboard__card-btn__arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+/* Corner accents — same as ProceedButton */
+.dashboard__card-btn__corner {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+}
+
+.dashboard__card-btn__corner--tl {
+  top: -1px; left: -1px;
+  border-top:  1px solid var(--td-white-muted);
+  border-left: 1px solid var(--td-white-muted);
+}
+
+.dashboard__card-btn__corner--br {
+  bottom: -1px; right: -1px;
+  border-bottom: 1px solid var(--td-white-muted);
+  border-right:  1px solid var(--td-white-muted);
+}
+
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Responsive ── */
+@media (max-width: 900px) {
+  .dashboard__cards {
+    flex-direction: column;
+    overflow-y: auto;
+    align-items: center;
+    gap: 16px;
+    padding: 90px 24px 32px;
+  }
+  .dashboard__card { max-width: 480px; }
+}
+
 @media (max-width: 600px) {
   .dashboard__nav { padding: 20px 24px; }
   .dashboard__nav-status-label { display: none; }
