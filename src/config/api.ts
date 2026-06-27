@@ -1,0 +1,1 @@
+export const VAULT_API_BASE = import.meta.env.VITE_VAULT_API_URL || 'http://localhost:4000';

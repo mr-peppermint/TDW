@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Silk from '../../components/Silk';
 import StatusIndicator from '../../components/StatusIndicator';
 import './Vault.css';
+import { VAULT_API_BASE } from '../../config/api';
 
-const API_BASE = 'http://localhost:4000/api';
+const API_BASE = `${VAULT_API_BASE}/api`;
 const VAULT_PASSPHRASE = 'tijori';
 
 interface VaultFile {
