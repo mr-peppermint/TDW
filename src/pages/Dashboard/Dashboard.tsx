@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Silk from '../../components/Silk';
 import './Dashboard.css';
 
@@ -117,6 +118,13 @@ const Dashboard: React.FC = () => {
             </a>
           </div>
 
+        </div>
+
+        <div className="dashboard__home-bar">
+          <Link to="/" className="dashboard__home-link" aria-label="Go back to homepage">
+            <span className="dashboard__home-link-arrow" aria-hidden="true">&larr;</span>
+            <span>Back to Homepage</span>
+          </Link>
         </div>
       </div>{/* end scroll */}
 
