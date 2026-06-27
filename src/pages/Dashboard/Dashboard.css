@@ -166,7 +166,7 @@
   font-weight: 700;
   letter-spacing: 0.32em;
   text-transform: uppercase;
-  color: var(--td-white-muted);
+  color: var(--td-white-glow);
   margin: 0 0 40px;
   opacity: 0;
   animation: card-rise 0.6s 0.15s var(--ease-out) forwards;
@@ -333,7 +333,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #2a2a2a, #3e3e3e);
+  background: linear-gradient(90deg, var(--td-violet-dec), var(--td-violet-glow));
   transform: translateX(-101%);
   transition: transform 0.35s var(--ease-out);
   z-index: 0;

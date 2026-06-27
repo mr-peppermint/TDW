@@ -53,7 +53,7 @@ const Dashboard: React.FC = () => {
               </svg>
             </div>
             <h2 className="dashboard__card-title">Vault</h2>
-            <p className="dashboard__card-desc">Secure personal storage for notes, credentials, and private data — encrypted and always accessible.</p>
+            <p className="dashboard__card-desc">Secure Cloud storage for notes, random stuff, and useful data — Encrypted and Jailed.</p>
             <a href="/vault" className="dashboard__card-btn" aria-label="Open Vault">
               <span className="dashboard__card-btn__corner dashboard__card-btn__corner--tl" aria-hidden="true" />
               <span className="dashboard__card-btn__corner dashboard__card-btn__corner--br" aria-hidden="true" />
@@ -69,7 +69,7 @@ const Dashboard: React.FC = () => {
               </svg>
             </div>
             <h2 className="dashboard__card-title">Saved</h2>
-            <p className="dashboard__card-desc">Bookmarks, links, and resources saved for quick retrieval — organised and always in reach.</p>
+            <p className="dashboard__card-desc">Bookmarked links and resources saved for quick retrieval — organised and always in reach.</p>
             <a href="/saved" className="dashboard__card-btn" aria-label="Open Saved">
               <span className="dashboard__card-btn__corner dashboard__card-btn__corner--tl" aria-hidden="true" />
               <span className="dashboard__card-btn__corner dashboard__card-btn__corner--br" aria-hidden="true" />
