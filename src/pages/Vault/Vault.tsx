@@ -3,6 +3,7 @@ import Silk from '../../components/Silk';
 import StatusIndicator from '../../components/StatusIndicator';
 import './Vault.css';
 import { VAULT_API_BASE } from '../../config/api';
+import { uploadFileChunked } from './uploadChunked';
 
 const API_BASE = `${VAULT_API_BASE}/api`;
 const VAULT_PASSPHRASE = 'tijori';
@@ -214,24 +215,9 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     if (uploading) return;
     setUploading(true);
     setUploadProgress(0);
-    const formData = new FormData();
-    formData.append('file', file);
     try {
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener('progress', e => {
-          if (e.lengthComputable) setUploadProgress(Math.round((e.loaded / e.total) * 100));
-        });
-        xhr.addEventListener('load', () => {
-          if (xhr.status === 201) { push('File uploaded.', 'success'); resolve(); return; }
-          let msg = 'Upload failed.';
-          try { msg = JSON.parse(xhr.responseText).error ?? msg; } catch {}
-          reject(new Error(msg));
-        });
-        xhr.addEventListener('error', () => reject(new Error('Network error.')));
-        xhr.open('POST', `${API_BASE}/upload`);
-        xhr.send(formData);
-      });
+      await uploadFileChunked(file, percent => setUploadProgress(percent));
+      push('File uploaded.', 'success');
       await fetchFiles();
     } catch (err: unknown) {
       push(err instanceof Error ? err.message : 'Upload failed.', 'error');

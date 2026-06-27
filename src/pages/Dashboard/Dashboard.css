@@ -2,32 +2,33 @@
    Dashboard Page Styles — Silk background only
    ============================================================ */
 
+/* ── Root: fixed viewport shell ── */
 .dashboard {
-  position: relative;
+  position: fixed;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
   background: #080808;
 }
 
-/* ── Silk canvas layer ── */
+/* ── Background layers — all fixed so they never scroll ── */
 .dashboard__silk {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
 }
 
-/* Dark overlay so the silk isn't too bright */
 .dashboard__overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 1;
   background: rgba(8, 8, 8, 0.55);
+  pointer-events: none;
 }
 
-/* ── Vignette ── */
 .dashboard__vignette {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 2;
   pointer-events: none;
@@ -39,9 +40,8 @@
   );
 }
 
-/* ── Scan lines ── */
 .dashboard__scanline {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 3;
   pointer-events: none;
@@ -53,16 +53,29 @@
   );
 }
 
-/* ── Navbar ── */
+/* ── Scrollable content layer — sits above background ── */
+.dashboard__scroll {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--td-border-light) transparent;
+}
+
+.dashboard__scroll::-webkit-scrollbar       { width: 4px; }
+.dashboard__scroll::-webkit-scrollbar-track { background: transparent; }
+.dashboard__scroll::-webkit-scrollbar-thumb { background: var(--td-border-light); border-radius: 2px; }
+
+/* ── Navbar — in flow, scrolls with content ── */
 .dashboard__nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 30px 52px;
-  pointer-events: none;
+  padding: 28px 52px;
+  width: 100%;
 }
 
 .dashboard__nav-brand {
@@ -102,7 +115,6 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  pointer-events: auto;
 }
 
 .dashboard__nav-status-label {
@@ -146,48 +158,39 @@
   100% { transform: scale(2.6); opacity: 0; }
 }
 
-/* ── NEW: Center Top Heading ── */
+/* ── Page heading ── */
 .dashboard__heading {
-  position: absolute;
-  top: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  margin: 0;
-  font-family: var(--font-display, sans-serif);
-  font-size: 30px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 3vw, 26px);
   font-weight: 700;
-  letter-spacing: 0.3em;
-  color: var(--td-white-muted)
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-  pointer-events: none;
+  color: var(--td-white-muted);
+  margin: 0 0 40px;
+  opacity: 0;
+  animation: card-rise 0.6s 0.15s var(--ease-out) forwards;
 }
 
-/* ── Cards grid ── */
+/* ── Cards grid — 2 top + 1 wide bottom ── */
 .dashboard__cards {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 24px;
-  padding: 140px 48px 48px; /* Pushed down to clear heading */
-  pointer-events: none;
+  padding: 0 48px 64px;
+  max-width: 648px; /* 300+300+gap = matches card widths exactly */
+  margin: 0 auto;
 }
 
+/* Vault and Saved sit in the first row */
 .dashboard__card {
-  pointer-events: auto;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  width: 100%;
-  max-width: 320px;
   background: rgba(12, 12, 12, 0.72);
   border: 1px solid var(--td-border-light);
   border-radius: 4px;
-  padding: 36px 32px 32px;
+  padding: 32px 28px 28px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: border-color 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
@@ -199,6 +202,11 @@
 .dashboard__card:nth-child(2) { animation-delay: 0.45s; }
 .dashboard__card:nth-child(3) { animation-delay: 0.6s; }
 
+/* Projects card spans both columns */
+.dashboard__card--wide {
+  grid-column: 1 / -1;
+}
+
 .dashboard__card:hover {
   border-color: var(--td-accent);
   box-shadow:
@@ -209,7 +217,7 @@
 /* Icon */
 .dashboard__card-icon {
   color: var(--td-white-muted);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   transition: color 0.25s var(--ease-out);
 }
 
@@ -222,9 +230,9 @@
   font-family: var(--font-display);
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   color: var(--td-white);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 /* Description */
@@ -234,16 +242,75 @@
   font-weight: 400;
   line-height: 1.65;
   color: var(--td-white-muted);
-  margin-bottom: 28px;
+  margin-bottom: 24px;
   flex: 1;
 }
 
+/* ── Thumbnail strip — projects card only ── */
+.dashboard__card-thumbs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.dashboard__card-thumb {
+  flex: 1;
+  aspect-ratio: 16 / 9;
+  border-radius: 3px;
+  border: 1px solid var(--td-border);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: border-color 0.25s var(--ease-out);
+  min-width: 0;
+}
+
+.dashboard__card-thumb:hover {
+  border-color: var(--td-border-light);
+}
+
+.dashboard__card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  transition: opacity 0.25s;
+}
+
+.dashboard__card-thumb:hover img {
+  opacity: 1;
+}
+
+/* Empty placeholder state */
+.dashboard__card-thumb--empty {
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dashboard__card-thumb--empty svg {
+  color: var(--td-white-dim);
+  opacity: 0.4;
+}
+
+.dashboard__card-thumb--empty span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--td-white-dim);
+  opacity: 0.4;
+}
+
+/* ── Card button ── */
 .dashboard__card-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 11px 24px;
+  gap: 10px;
+  padding: 11px 20px;
   background: transparent;
   border: 1px solid var(--td-border-light);
   border-radius: 2px;
@@ -253,7 +320,7 @@
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   overflow: hidden;
   align-self: flex-start;
@@ -266,31 +333,24 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, var(--td-violet-dec), var(--td-violet-glow));
+  background: linear-gradient(90deg, #2a2a2a, #3e3e3e);
   transform: translateX(-101%);
   transition: transform 0.35s var(--ease-out);
   z-index: 0;
 }
 
 .dashboard__card-btn:hover::before,
-.dashboard__card-btn:focus-visible::before {
-  transform: translateX(0);
-}
+.dashboard__card-btn:focus-visible::before { transform: translateX(0); }
 
 .dashboard__card-btn:hover,
 .dashboard__card-btn:focus-visible {
   border-color: var(--td-white);
-  box-shadow:
-    0 0 20px rgba(82, 39, 255, 0.45),
-    0 0 44px rgba(82, 39, 255, 0.15);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.10);
   outline: none;
 }
 
 .dashboard__card-btn__text,
-.dashboard__card-btn__arrow {
-  position: relative;
-  z-index: 1;
-}
+.dashboard__card-btn__arrow { position: relative; z-index: 1; }
 
 .dashboard__card-btn__arrow {
   font-size: 13px;
@@ -304,11 +364,9 @@
   opacity: 1;
 }
 
-/* Corner accents — same as ProceedButton */
 .dashboard__card-btn__corner {
   position: absolute;
-  width: 5px;
-  height: 5px;
+  width: 5px; height: 5px;
 }
 
 .dashboard__card-btn__corner--tl {
@@ -323,37 +381,31 @@
   border-right:  1px solid var(--td-white-muted);
 }
 
+/* ── Animations ── */
 @keyframes card-rise {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── Responsive ── */
-@media (max-width: 900px) {
-  .dashboard__heading {
-    /* Push the title down slightly on mobile so it doesn't overlap navbar */
-    top: 75px; 
-    font-size: 20px;
-  }
 
-  .dashboard__cards {
-    flex-direction: column;
-    overflow-y: auto;
-    
-    /* FIX: Changing justify-content prevents clipping on top/bottom of scrollable flex column */
-    justify-content: flex-start; 
-    align-items: center;
-    gap: 16px;
-    padding: 130px 24px 32px; /* Starts below the new title */
-    
-    /* Smooth scrolling for iOS */
-    -webkit-overflow-scrolling: touch; 
-  }
-  
-  .dashboard__card { max-width: 480px; }
+/* Tablet */
+@media (max-width: 900px) {
+  .dashboard__nav    { padding: 22px 28px; }
+  .dashboard__cards  { padding: 0 24px 48px; gap: 16px; max-width: 100%; }
 }
 
+/* Mobile — single column */
 @media (max-width: 600px) {
-  .dashboard__nav { padding: 20px 24px; }
+  .dashboard__nav              { padding: 18px 20px; }
   .dashboard__nav-status-label { display: none; }
+  .dashboard__nav-wordmark     { font-size: 10px; letter-spacing: 0.22em; }
+  .dashboard__heading          { font-size: 16px; letter-spacing: 0.24em; margin-bottom: 28px; }
+  .dashboard__cards            { grid-template-columns: 1fr; padding: 0 16px 40px; gap: 14px; max-width: 100%; }
+  .dashboard__card--wide       { grid-column: 1; }
+  .dashboard__card             { padding: 24px 20px 20px; }
+  .dashboard__card-title       { font-size: 18px; }
+  .dashboard__card-btn         { width: 100%; justify-content: center; }
+  .dashboard__card-thumbs      { flex-direction: column; }
+  .dashboard__card-thumb       { aspect-ratio: 16 / 9; }
 }
