@@ -4,16 +4,7 @@ import StatusIndicator from '../../components/StatusIndicator';
 import './Vault.css';
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-const API_BASE = 'http://localhost:4000/api';
-
-/**
- * The passphrase is checked entirely client-side and stored in sessionStorage
- * so it clears when the tab closes. For a personal vault on a private server
- * this is the right balance — the real security is the backend's path jail,
- * rate limiting, and CORS allowlist.
- *
- * Change this to whatever passphrase you want.
- */
+const API_BASE = 'http://localhost:5000/api'; // Matched to your Node.js server port
 const VAULT_PASSPHRASE = 'thetadivision';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -56,7 +47,7 @@ function relativeTime(iso: string): string {
   return `${Math.floor(s / 86400)}d ago`;
 }
 
-// ─── Toast hook ───────────────────────────────────────────────────────────────
+// ─── Toast Hook ───────────────────────────────────────────────────────────────
 let _toastId = 0;
 
 function useToasts() {
@@ -82,14 +73,12 @@ const LoginScreen: React.FC<LoginProps> = ({ onSuccess }) => {
   const [shaking, setShaking] = useState(false);
   const inputRef              = useRef<HTMLInputElement>(null);
 
-  // Auto-focus the input on mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
   const attempt = () => {
     if (value === VAULT_PASSPHRASE) {
-      // Store auth in sessionStorage — cleared when the tab closes
       sessionStorage.setItem('vault_auth', '1');
       onSuccess();
     } else {
@@ -104,7 +93,6 @@ const LoginScreen: React.FC<LoginProps> = ({ onSuccess }) => {
 
   return (
     <div className="vault">
-      {/* Background */}
       <div className="vault__silk" aria-hidden="true">
         <Silk speed={3} scale={1.1} color="#1a0a3e" noiseIntensity={1.5} rotation={2.4} />
       </div>
@@ -112,7 +100,6 @@ const LoginScreen: React.FC<LoginProps> = ({ onSuccess }) => {
       <div className="vault__vignette" aria-hidden="true" />
       <div className="vault__scanline" aria-hidden="true" />
 
-      {/* Navbar */}
       <nav className="vault__nav" aria-label="Site navigation">
         <div className="vault__nav-brand">
           <a href="/" className="vault__nav-brand-link">
@@ -128,17 +115,13 @@ const LoginScreen: React.FC<LoginProps> = ({ onSuccess }) => {
         </div>
       </nav>
 
-      {/* Login card */}
       <div className="vault__login-wrap">
         <div className={`vault__login${shaking ? ' vault__login--shake' : ''}`}>
-
-          {/* Corner accents */}
           <span className="vault__corner vault__corner--tl" aria-hidden="true" />
           <span className="vault__corner vault__corner--tr" aria-hidden="true" />
           <span className="vault__corner vault__corner--bl" aria-hidden="true" />
           <span className="vault__corner vault__corner--br" aria-hidden="true" />
 
-          {/* Lock icon */}
           <div className="vault__login-icon" aria-hidden="true">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" strokeWidth="1.5"
@@ -172,10 +155,7 @@ const LoginScreen: React.FC<LoginProps> = ({ onSuccess }) => {
           <button className="vault__login-btn" onClick={attempt}>
             <span className="vault__login-btn-text">Authenticate</span>
             <span className="vault__login-btn-arrow" aria-hidden="true">→</span>
-            {/* Sweep fill */}
-            <span className="vault__login-btn-fill" aria-hidden="true" />
           </button>
-
         </div>
       </div>
     </div>
@@ -183,7 +163,7 @@ const LoginScreen: React.FC<LoginProps> = ({ onSuccess }) => {
 };
 
 // =============================================================================
-// VAULT PAGE (authenticated view)
+// VAULT PAGE (Authenticated View)
 // =============================================================================
 const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   const [files, setFiles]         = useState<VaultFile[]>([]);
@@ -197,7 +177,6 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   const fileInputRef              = useRef<HTMLInputElement>(null);
   const { toasts, push }          = useToasts();
 
-  // ── Fetch file list ─────────────────────────────────────────────────────────
   const fetchFiles = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/files`);
@@ -214,7 +193,6 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
   useEffect(() => { fetchFiles(); }, [fetchFiles]);
 
-  // ── Upload ──────────────────────────────────────────────────────────────────
   const handleUpload = useCallback(async (file: File) => {
     if (uploading) return;
     setUploading(true);
@@ -230,7 +208,7 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             setUploadProgress(Math.round((e.loaded / e.total) * 100));
         });
         xhr.addEventListener('load', () => {
-          if (xhr.status === 201) { push('File uploaded.', 'success'); resolve(); }
+          if (xhr.status === 200 || xhr.status === 201) { push('File uploaded.', 'success'); resolve(); }
           else {
             let msg = 'Upload failed.';
             try { msg = JSON.parse(xhr.responseText).error ?? msg; } catch {}
@@ -251,7 +229,6 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     }
   }, [uploading, fetchFiles, push]);
 
-  // ── Drag & drop ─────────────────────────────────────────────────────────────
   const onDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
@@ -259,14 +236,10 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     if (file) handleUpload(file);
   }, [handleUpload]);
 
-  // ── Delete ──────────────────────────────────────────────────────────────────
   const handleDelete = useCallback(async (filename: string) => {
     setDeleting(filename);
     try {
-      const res = await fetch(
-        `${API_BASE}/delete/${encodeURIComponent(filename)}`,
-        { method: 'DELETE' }
-      );
+      const res = await fetch(`${API_BASE}/delete/${encodeURIComponent(filename)}`, { method: 'DELETE' });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Delete failed.');
       push(`"${filename}" deleted.`, 'success');
@@ -278,17 +251,12 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     }
   }, [fetchFiles, push]);
 
-  const filteredFiles = files.filter(f =>
-    f.name.toLowerCase().includes(search.toLowerCase())
-  );
-
+  const filteredFiles = files.filter(f => f.name.toLowerCase().includes(search.toLowerCase()));
   const quotaPct   = quota ? Math.min(quota.usedPercent, 100) : 0;
   const quotaColor = quotaPct > 90 ? '#ff4d6a' : quotaPct > 70 ? '#FFB547' : 'var(--td-green)';
 
   return (
     <div className="vault vault--scrollable">
-
-      {/* Background */}
       <div className="vault__silk" aria-hidden="true">
         <Silk speed={3} scale={1.1} color="#1a0a3e" noiseIntensity={1.5} rotation={2.4} />
       </div>
@@ -296,7 +264,6 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
       <div className="vault__vignette" aria-hidden="true" />
       <div className="vault__scanline" aria-hidden="true" />
 
-      {/* Navbar */}
       <nav className="vault__nav" aria-label="Site navigation">
         <div className="vault__nav-brand">
           <a href="/" className="vault__nav-brand-link">
@@ -309,32 +276,19 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         <div className="vault__nav-right">
           <span className="vault__nav-status-label">Operational</span>
           <StatusIndicator status="online" size="md" pulse />
-          <button
-            className="vault__logout-btn"
-            onClick={onLogout}
-            aria-label="Lock vault and log out"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="11" width="18" height="11" rx="2" />
-              <path d="M7 11V7a5 5 0 0 1 9.9-1" />
-            </svg>
+          <button className="vault__logout-btn" onClick={onLogout} aria-label="Lock vault">
             <span>Lock</span>
           </button>
         </div>
       </nav>
 
-      {/* Main content */}
       <main className="vault__main" aria-label="Vault file manager">
-
         <header className="vault__header">
           <p className="vault__eyebrow">Secure Storage</p>
           <h1 className="vault__title">VAULT</h1>
           <p className="vault__sub">End-to-end personal file storage. 100 GB jailed partition.</p>
         </header>
 
-        {/* Quota */}
         {quota && (
           <div className="vault__quota" role="region" aria-label="Storage quota">
             <div className="vault__quota-header">
@@ -347,15 +301,11 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
               </span>
             </div>
             <div className="vault__quota-track" aria-hidden="true">
-              <div
-                className="vault__quota-fill"
-                style={{ width: `${quotaPct}%`, background: quotaColor }}
-              />
+              <div className="vault__quota-fill" style={{ width: `${quotaPct}%`, background: quotaColor }} />
             </div>
           </div>
         )}
 
-        {/* Drop zone */}
         <div
           className={`vault__dropzone${dragOver ? ' vault__dropzone--active' : ''}${uploading ? ' vault__dropzone--uploading' : ''}`}
           onDragOver={e => { e.preventDefault(); setDragOver(true); }}
@@ -364,8 +314,6 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
           onClick={() => !uploading && fileInputRef.current?.click()}
           role="button"
           tabIndex={0}
-          aria-label="Upload file — click or drag and drop"
-          onKeyDown={e => e.key === 'Enter' && fileInputRef.current?.click()}
         >
           <input
             ref={fileInputRef}
@@ -375,17 +323,12 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             tabIndex={-1}
             onChange={e => { const f = e.target.files?.[0]; if (f) handleUpload(f); }}
           />
-
           {uploading ? (
             <div className="vault__upload-progress">
               <div className="vault__progress-ring" aria-hidden="true">
                 <svg viewBox="0 0 48 48">
                   <circle cx="24" cy="24" r="20" className="vault__progress-track" />
-                  <circle
-                    cx="24" cy="24" r="20"
-                    className="vault__progress-arc"
-                    strokeDasharray={`${uploadProgress * 1.257} 125.7`}
-                  />
+                  <circle cx="24" cy="24" r="20" className="vault__progress-arc" strokeDasharray={`${uploadProgress * 1.257} 125.7`} />
                 </svg>
                 <span className="vault__progress-pct">{uploadProgress}%</span>
               </div>
@@ -394,31 +337,24 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
           ) : (
             <>
               <div className="vault__dropzone-icon" aria-hidden="true">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="1.5"
-                  strokeLinecap="round" strokeLinejoin="round">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="17 8 12 3 7 8" />
                   <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
               </div>
-              <p className="vault__dropzone-text">
-                {dragOver ? 'Drop to upload' : 'Click or drag a file to upload'}
-              </p>
+              <p className="vault__dropzone-text">{dragOver ? 'Drop to upload' : 'Click or drag a file to upload'}</p>
               <p className="vault__dropzone-hint">Max 10 GB per file · executables blocked</p>
             </>
           )}
-
           <span className="vault__corner vault__corner--tl" aria-hidden="true" />
           <span className="vault__corner vault__corner--tr" aria-hidden="true" />
           <span className="vault__corner vault__corner--bl" aria-hidden="true" />
           <span className="vault__corner vault__corner--br" aria-hidden="true" />
         </div>
 
-        {/* Search */}
         <div className="vault__search-wrap">
-          <svg className="vault__search-icon" width="14" height="14" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <svg className="vault__search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
@@ -428,76 +364,37 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             placeholder="Filter files…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            aria-label="Filter files by name"
           />
         </div>
 
-        {/* File list */}
         <section className="vault__files" aria-label="Stored files">
           {loading && (
             <div className="vault__state">
               <div className="vault__spinner" aria-hidden="true" />
-              <p>Connecting to vault…</p>
+              <p className="vault__state-title">Connecting to vault…</p>
             </div>
           )}
 
           {!loading && filteredFiles.length === 0 && (
             <div className="vault__state">
-              <p className="vault__state-title">
-                {search ? `No files matching "${search}"` : 'Vault is empty'}
-              </p>
-              <p className="vault__state-sub">
-                {search ? 'Clear the filter to see all files.' : 'Upload a file to get started.'}
-              </p>
+              <p className="vault__state-title">{search ? `No files matching "${search}"` : 'Vault is empty'}</p>
+              <p className="vault__state-sub">{search ? 'Clear the filter to see all files.' : 'Upload a file to get started.'}</p>
             </div>
           )}
 
           {!loading && filteredFiles.map(file => (
             <div key={file.name} className="vault__file-row">
-              <div className="vault__file-ext" aria-hidden="true">
-                {getExtension(file.name)}
-              </div>
+              <div className="vault__file-ext" aria-hidden="true">{getExtension(file.name)}</div>
               <div className="vault__file-meta">
                 <span className="vault__file-name" title={file.name}>{file.name}</span>
-                <span className="vault__file-info">
-                  {file.sizeHuman} · {relativeTime(file.modified)}
-                </span>
+                <span className="vault__file-info">{file.sizeHuman} · {relativeTime(file.modified)}</span>
               </div>
               <div className="vault__file-actions">
-                <a
-                  href={`${API_BASE}/download/${encodeURIComponent(file.name)}`}
-                  download={file.name}
-                  className="vault__file-btn vault__file-btn--dl"
-                  aria-label={`Download ${file.name}`}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2"
-                    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
+                <a href={`${API_BASE}/download/${encodeURIComponent(file.name)}`} download={file.name} className="vault__file-btn vault__file-btn--dl">
                   <span>Download</span>
                 </a>
-                <button
-                  className="vault__file-btn vault__file-btn--del"
-                  onClick={() => handleDelete(file.name)}
-                  disabled={deleting === file.name}
-                  aria-label={`Delete ${file.name}`}
-                >
-                  {deleting === file.name ? (
-                    <span className="vault__mini-spin" aria-hidden="true" />
-                  ) : (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" strokeWidth="2"
-                      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <polyline points="3 6 5 6 21 6" />
-                      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                      <path d="M10 11v6" /><path d="M14 11v6" />
-                      <path d="M9 6V4h6v2" />
-                    </svg>
-                  )}
-                  <span>{deleting === file.name ? 'Deleting…' : 'Delete'}</span>
+                <button className="vault__file-btn vault__file-btn--del" onClick={() => handleDelete(file.name)} disabled={deleting === file.name}>
+                  {deleting === file.name ? <span className="vault__mini-spin" aria-hidden="true" /> : <span>Delete</span>}
                 </button>
               </div>
             </div>
@@ -509,15 +406,11 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
           <span className="vault__footer-sep">·</span>
           <span>Zero-trust backend · path-jailed · rate-limited</span>
         </footer>
-
       </main>
 
-      {/* Toasts */}
       <div className="vault__toasts" aria-live="polite" aria-atomic="false">
         {toasts.map(t => (
-          <div key={t.id} className={`vault__toast vault__toast--${t.kind}`}>
-            {t.message}
-          </div>
+          <div key={t.id} className={`vault__toast vault__toast--${t.kind}`}>{t.message}</div>
         ))}
       </div>
     </div>
@@ -525,13 +418,10 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 };
 
 // =============================================================================
-// ROOT — decides whether to show login or vault
+// ROOT
 // =============================================================================
 const Vault: React.FC = () => {
-  const [authed, setAuthed] = useState<boolean>(
-    // Persist auth for the life of the browser tab
-    sessionStorage.getItem('vault_auth') === '1'
-  );
+  const [authed, setAuthed] = useState<boolean>(sessionStorage.getItem('vault_auth') === '1');
 
   const handleLogout = () => {
     sessionStorage.removeItem('vault_auth');
