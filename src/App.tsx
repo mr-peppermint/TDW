@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import CenterHero from './components/CenterHero';
 import ProceedButton from './components/ProceedButton';
 import Dashboard from './pages/Dashboard';
+import Vault from './pages/Vault';
 import './styles/globals.css';
 import './styles/app.css';
 
@@ -52,6 +53,7 @@ const App: React.FC = () => (
   <Routes>
     <Route path="/" element={<Landing />} />
     <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/vault" element={<Vault />} />
   </Routes>
 );
 
