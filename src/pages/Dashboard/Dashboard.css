@@ -146,6 +146,24 @@
   100% { transform: scale(2.6); opacity: 0; }
 }
 
+/* ── NEW: Center Top Heading ── */
+.dashboard__heading {
+  position: absolute;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  margin: 0;
+  font-family: var(--font-display, sans-serif);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--td-white-muted)
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+
 /* ── Cards grid ── */
 .dashboard__cards {
   position: absolute;
@@ -155,7 +173,7 @@
   align-items: center;
   justify-content: center;
   gap: 24px;
-  padding: 100px 48px 48px; /* top clears navbar */
+  padding: 140px 48px 48px; /* Pushed down to clear heading */
   pointer-events: none;
 }
 
@@ -219,7 +237,6 @@
   margin-bottom: 28px;
   flex: 1;
 }
-
 
 .dashboard__card-btn {
   position: relative;
@@ -313,13 +330,26 @@
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
+  .dashboard__heading {
+    /* Push the title down slightly on mobile so it doesn't overlap navbar */
+    top: 75px; 
+    font-size: 20px;
+  }
+
   .dashboard__cards {
     flex-direction: column;
     overflow-y: auto;
+    
+    /* FIX: Changing justify-content prevents clipping on top/bottom of scrollable flex column */
+    justify-content: flex-start; 
     align-items: center;
     gap: 16px;
-    padding: 90px 24px 32px;
+    padding: 130px 24px 32px; /* Starts below the new title */
+    
+    /* Smooth scrolling for iOS */
+    -webkit-overflow-scrolling: touch; 
   }
+  
   .dashboard__card { max-width: 480px; }
 }
 

@@ -37,6 +37,8 @@ const Dashboard: React.FC = () => {
           </span>
         </div>
       </nav>
+      
+      <h1 className="dashboard__heading">DASHBOARD</h1>
 
       {/* ── 3 Cards ── */}
       <div className="dashboard__cards">
