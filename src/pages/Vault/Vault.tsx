@@ -314,7 +314,13 @@ const VaultMain: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                   </svg>
                   <span className="vault__progress-pct">{uploadProgress}%</span>
                 </div>
-                <p className="vault__dropzone-text">Uploading…</p>
+                {/* uploadProgress hits 100 as soon as the last chunk lands, but the
+                    server still needs time to reassemble everything before
+                    /upload/complete returns — without this the UI would look
+                    frozen at "Uploading… 100%" during that gap. */}
+                <p className="vault__dropzone-text">
+                  {uploadProgress >= 100 ? 'Finalizing…' : 'Uploading…'}
+                </p>
               </div>
             ) : (
               <>
