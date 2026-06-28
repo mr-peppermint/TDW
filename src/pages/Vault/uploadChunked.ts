@@ -37,9 +37,9 @@ export async function uploadFileChunked(
     const end = Math.min(start + CHUNK_SIZE, file.size);
 
     const formData = new FormData();
-    formData.append('chunk', file.slice(start, end));
     formData.append('uploadId', uploadId);
     formData.append('chunkIndex', String(i));
+    formData.append('chunk', file.slice(start, end));
 
     const chunkRes = await fetch(`${API_BASE}/upload/chunk`, {
       method: 'POST',

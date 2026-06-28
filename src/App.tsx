@@ -7,6 +7,7 @@ import CenterHero from './components/CenterHero';
 import ProceedButton from './components/ProceedButton';
 import Dashboard from './pages/Dashboard';
 import Vault from './pages/Vault';
+import Saved from './pages/Saved';
 import './styles/globals.css';
 import './styles/app.css';
 
@@ -29,18 +30,13 @@ const Landing: React.FC = () => (
         quality="medium"
       />
     </div>
-
     <div className="app__vignette" aria-hidden="true" />
-
     {/* ── Layer 3: CRT scan lines ── */}
     <div className="app__scanline" aria-hidden="true" />
-
     {/* ── UI Layer: Navbar ── */}
     <Navbar />
-
     {/* ── UI Layer: Center hero identity ── */}
     <CenterHero />
-
     {/* ── UI Layer: Proceed CTA ── */}
     <ProceedButton
       href="/dashboard"
@@ -51,9 +47,10 @@ const Landing: React.FC = () => (
 
 const App: React.FC = () => (
   <Routes>
-    <Route path="/" element={<Landing />} />
+    <Route path="/"          element={<Landing />} />
     <Route path="/dashboard" element={<Dashboard />} />
-    <Route path="/vault" element={<Vault />} />
+    <Route path="/vault"     element={<Vault />} />
+    <Route path="/saved"     element={<Saved />} />
   </Routes>
 );
 
