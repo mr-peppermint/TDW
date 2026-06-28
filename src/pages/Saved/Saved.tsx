@@ -11,6 +11,44 @@ interface Collection {
   thumbnails?: string[];
 }
 
+type GatewayAction = 'access' | 'delete';
+
+interface GatewayRequest {
+  action: GatewayAction;
+  targetId: string;
+}
+
+interface AuthSuccess {
+  ok: true;
+  action: GatewayAction;
+  targetId: string;
+}
+
+class MockAuthError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'MockAuthError';
+    this.status = status;
+  }
+}
+
+const mockBackendAuthenticate = (
+  action: GatewayAction,
+  password: string,
+  targetId: string,
+): Promise<AuthSuccess> => new Promise((resolve, reject) => {
+  window.setTimeout(() => {
+    if (password === 'jkl') {
+      resolve({ ok: true, action, targetId });
+      return;
+    }
+
+    reject(new MockAuthError('Unauthorized', 401));
+  }, 1000);
+});
+
 /* ── Default collections ── */
 const DEFAULT_COLLECTIONS: Collection[] = [
   { id: 'secret-gallery', name: 'Secret Gallery', items: 12 },
@@ -37,6 +75,17 @@ const EditIcon: React.FC = () => (
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+  </svg>
+);
+
+const TrashIcon: React.FC = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 6h18" />
+    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6" />
+    <path d="M14 11v6" />
   </svg>
 );
 
@@ -104,15 +153,117 @@ const Modal: React.FC<ModalProps> = ({ mode, initial = '', onConfirm, onCancel }
   );
 };
 
+interface PasswordGatewayProps {
+  request: GatewayRequest;
+  onCancel: () => void;
+  onVerified: (response: AuthSuccess) => void;
+}
+
+const PasswordGateway: React.FC<PasswordGatewayProps> = ({ request, onCancel, onVerified }) => {
+  const [password, setPassword] = useState('');
+  const [status, setStatus] = useState<'idle' | 'verifying' | 'denied'>('idle');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const submit = async () => {
+    if (!password || status === 'verifying') return;
+
+    setStatus('verifying');
+
+    try {
+      const response = await mockBackendAuthenticate(request.action, password, request.targetId);
+      onVerified(response);
+    } catch (error) {
+      setStatus('denied');
+      setPassword('');
+      window.setTimeout(() => inputRef.current?.focus(), 0);
+    }
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submit();
+    }
+
+    if (e.key === 'Escape' && status !== 'verifying') {
+      onCancel();
+    }
+  };
+
+  return (
+    <div
+      className="saved__gateway-backdrop"
+      onClick={e => {
+        if (e.target === e.currentTarget && status !== 'verifying') onCancel();
+      }}
+    >
+      <div className="saved__gateway" role="dialog" aria-modal="true" aria-label="Password gateway">
+        <span className="saved__gateway-corner saved__gateway-corner--tl" aria-hidden="true" />
+        <span className="saved__gateway-corner saved__gateway-corner--tr" aria-hidden="true" />
+        <span className="saved__gateway-corner saved__gateway-corner--bl" aria-hidden="true" />
+        <span className="saved__gateway-corner saved__gateway-corner--br" aria-hidden="true" />
+
+        <p className="saved__gateway-eyebrow">Security Gateway</p>
+        <h2 className="saved__gateway-title">
+          {request.action === 'access' ? 'Restricted Archive' : 'Deletion Lock'}
+        </h2>
+
+        <div className={`saved__gateway-status saved__gateway-status--${status}`} role="status">
+          {status === 'verifying' ? 'Verifying Data...' : status === 'denied' ? 'ACCESS DENIED' : 'Awaiting Cipher'}
+        </div>
+
+        <input
+          ref={inputRef}
+          className="saved__gateway-input"
+          type="password"
+          value={password}
+          onChange={e => {
+            setPassword(e.target.value);
+            if (status === 'denied') setStatus('idle');
+          }}
+          onKeyDown={handleKey}
+          placeholder="Enter access key"
+          disabled={status === 'verifying'}
+          aria-label="Access key"
+        />
+
+        <div className="saved__gateway-actions">
+          <button
+            className="saved__gateway-btn saved__gateway-btn--ghost"
+            onClick={onCancel}
+            disabled={status === 'verifying'}
+            type="button"
+          >
+            <span>Cancel</span>
+          </button>
+          <button
+            className="saved__gateway-btn"
+            onClick={submit}
+            disabled={!password || status === 'verifying'}
+            type="button"
+          >
+            <span>{status === 'verifying' ? 'Scanning' : 'Verify'}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ── Collection tile ── */
 interface TileProps {
   collection: Collection;
   animDelay: number;
   onEdit: () => void;
+  onDelete: () => void;
   onClick: () => void;
 }
 
-const CollectionTile: React.FC<TileProps> = ({ collection, animDelay, onEdit, onClick }) => (
+const CollectionTile: React.FC<TileProps> = ({ collection, animDelay, onEdit, onDelete, onClick }) => (
   <div
     className="saved__tile"
     style={{ animationDelay: `${animDelay}s` }}
@@ -125,14 +276,24 @@ const CollectionTile: React.FC<TileProps> = ({ collection, animDelay, onEdit, on
     <Mosaic thumbnails={collection.thumbnails} />
     <div className="saved__tile-gradient" aria-hidden="true" />
 
-    <button
-      className="saved__tile-edit"
-      onClick={e => { e.stopPropagation(); onEdit(); }}
-      aria-label={`Rename ${collection.name}`}
-      type="button"
-    >
-      <EditIcon />
-    </button>
+    <div className="saved__tile-tools">
+      <button
+        className="saved__tile-tool"
+        onClick={e => { e.stopPropagation(); onEdit(); }}
+        aria-label={`Rename ${collection.name}`}
+        type="button"
+      >
+        <EditIcon />
+      </button>
+      <button
+        className="saved__tile-tool saved__tile-tool--danger"
+        onClick={e => { e.stopPropagation(); onDelete(); }}
+        aria-label={`Delete ${collection.name}`}
+        type="button"
+      >
+        <TrashIcon />
+      </button>
+    </div>
 
     <div className="saved__tile-footer">
       <span className="saved__tile-name">{collection.name}</span>
@@ -144,6 +305,8 @@ const CollectionTile: React.FC<TileProps> = ({ collection, animDelay, onEdit, on
 /* ── Main page ── */
 const Saved: React.FC = () => {
   const [collections, setCollections] = useState<Collection[]>(DEFAULT_COLLECTIONS);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [gateway, setGateway] = useState<GatewayRequest | null>(null);
   const [modal, setModal] = useState<
     { mode: 'create' } |
     { mode: 'rename'; id: string; name: string } |
@@ -159,6 +322,23 @@ const Saved: React.FC = () => {
   const handleRename = useCallback((id: string, name: string) => {
     setCollections(prev => prev.map(c => c.id === id ? { ...c, name } : c));
     setModal(null);
+  }, []);
+
+  const handleCollectionClick = useCallback((id: string) => {
+    if (id === 'secret-gallery' && !isAuthenticated) {
+      setGateway({ action: 'access', targetId: id });
+    }
+  }, [isAuthenticated]);
+
+  const handleGatewayVerified = useCallback((response: AuthSuccess) => {
+    if (response.action === 'access') {
+      setIsAuthenticated(true);
+      setGateway(null);
+      return;
+    }
+
+    setCollections(prev => prev.filter(collection => collection.id !== response.targetId));
+    setGateway(null);
   }, []);
 
   return (
@@ -227,7 +407,8 @@ const Saved: React.FC = () => {
                 collection={col}
                 animDelay={0.05 * i}
                 onEdit={() => setModal({ mode: 'rename', id: col.id, name: col.name })}
-                onClick={() => {/* future: navigate to collection detail */}}
+                onDelete={() => setGateway({ action: 'delete', targetId: col.id })}
+                onClick={() => handleCollectionClick(col.id)}
               />
             ))}
 
@@ -249,6 +430,13 @@ const Saved: React.FC = () => {
           initial={modal.name}
           onConfirm={name => handleRename(modal.id, name)}
           onCancel={() => setModal(null)}
+        />
+      )}
+      {gateway && (
+        <PasswordGateway
+          request={gateway}
+          onCancel={() => setGateway(null)}
+          onVerified={handleGatewayVerified}
         />
       )}
 
